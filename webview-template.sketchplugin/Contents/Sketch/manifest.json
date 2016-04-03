@@ -1,0 +1,23 @@
+{
+  "author" : "",
+  "commands" : [
+    {
+      "script" : "script.js",
+      "handler" : "onRun",
+      "shortcut" : "",
+      "name" : "Run UI",
+      "identifier" : "run"
+    }
+  ],
+  "menu" : {
+    "items" : [
+      "run",
+    ],
+    "title" : "Webview template"
+  },
+  "identifier" : "com.jacopocolo.template.sketch",
+  "version" : "0",
+  "description" : "",
+  "authorEmail" : "",
+  "name" : "Sketchplugin webview template"
+}
