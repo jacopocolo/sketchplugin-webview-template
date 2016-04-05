@@ -1,0 +1,1 @@
+document.getElementById('myInput').value = '4'
