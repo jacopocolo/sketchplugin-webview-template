@@ -3,7 +3,8 @@
 ![template example](http://i.imgur.com/4aUeUKq.gif)
 
 ## What is this?
-It’s a simple template for building Sketch plugins using a html page as a interface. The sketchplugin contains two folders: Sketch and Resources. 
+It’s a simple template for building Sketch plugins using a html page as a interface. The sketchplugin contains two folders: Sketch and Resources.
+
 In the Sketch folder you can find manifest.json — the file with all the metadata that Sketch needs to run the plugin — and script.js, the file that actually has all the functions to run the plugin.
 In the Resources folder you can find ui.html, the html file that will be loaded by the plugin. It’s the interface of your plugin and it can both get data from Sketch and return data to Sketch.
 
