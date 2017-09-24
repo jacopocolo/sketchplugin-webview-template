@@ -2,6 +2,8 @@
 
 ![template example](http://i.imgur.com/4aUeUKq.gif)
 
+## Note: new version coming soon. I figured out a better way. Watch this repository for news.
+
 ## What is this?
 It’s a simple template for building Sketch plugins using a html page as a interface. The sketchplugin contains two folders: Sketch and Resources.
 
