@@ -1,95 +1,112 @@
-var fileName = "webview-template.sketchplugin"
+//Let's import the library that allows this
+@import "MochaJSDelegate.js";
 
 function onRun(context) {
-	//You do whatever you want with with context, I expose these
-	ctx = context;
+  //You do what you want with the context, I expose these
   doc = context.document;
   selection = context.selection;
   page = [doc currentPage];
   view = [doc currentView];
   artboards = [[doc currentPage] artboards];
 
-	var defaults = [NSUserDefaults standardUserDefaults], default_values = [NSMutableDictionary dictionary];
+  var userDefaults = NSUserDefaults.standardUserDefaults();
 
-	// Let’s create a window for the ui
-	var window = [[NSWindow alloc] init]
-	var windowTitle = "Webview template"
-	[window setTitle:windowTitle]
-  //Let’s create a 500x420 pixels window
-	[window setFrame:NSMakeRect(0, 0, 500, 420) display:false]
+	// create a window
+  var title = "webview-template";
+  var identifier = "com.jacopocolo.webviewtemplate";
+  var threadDictionary = NSThread.mainThread().threadDictionary();
 
-	//Do you want to pass something from Sketch to the WebView?
-	//I tried several different options and I found this to be the easiest:
-	//you save a file with the function that you want to run and webview loads it.
-	//There should be a function in cocoa to check if the webview is fully loaded
-	//but I never managed to get it to work in cocoascript.
-	var count = [artboards count]; // example value imported from Sketch
-	function saveScript(code) {
-	    var string = [NSString stringWithFormat: "%@", code],
-	      filePath = "/Users/" + NSUserName() + "/Library/Application Support/com.bohemiancoding.sketch3/Plugins/"+fileName+"/Contents/Resources/script.js";
-			[string writeToFile: filePath atomically: true
-	      encoding: NSUTF8StringEncoding error: nil];
-	}
-	//The javascript you want to run in the webview.
-	//In this case we set the value of myInout to 10
-	saveScript("document.getElementById('myInput').value = '"+count+"'");
+  if (threadDictionary[identifier]) {
+        return;
+  }
 
-  //Let’s set up the path of the html page we want to load
-  var filePath = "/Users/" + NSUserName() + "/Library/Application Support/com.bohemiancoding.sketch3/Plugins/"+fileName+"/Contents/Resources/ui.html";
+  var windowWidth = 600,
+        windowHeight = 450;
+    var webViewWindow = NSPanel.alloc().init();
+    webViewWindow.setFrame_display(NSMakeRect(0, 0, windowWidth, windowHeight), true);
+    webViewWindow.setStyleMask(NSTexturedBackgroundWindowMask | NSTitledWindowMask | NSClosableWindowMask | NSResizableWindowMask);
+    //Uncomment the next line to define the app bar color with an NSColor
+    //webViewWindow.setBackgroundColor(NSColor.whiteColor());
+    webViewWindow.standardWindowButton(NSWindowMiniaturizeButton).setHidden(true);
+    webViewWindow.standardWindowButton(NSWindowZoomButton).setHidden(true);
+    webViewWindow.setTitle(title);
+    webViewWindow.setTitlebarAppearsTransparent(true);
+    webViewWindow.becomeKeyWindow();
+    webViewWindow.setLevel(NSFloatingWindowLevel);
+    threadDictionary[identifier] = webViewWindow;
+    COScript.currentCOScript().setShouldKeepAround_(true);
 
-  //Let’s set up a frame for the webview, a little smaller than the window so we have room for controls
-  var frame = NSMakeRect(0,60,500,340);
-  var url = [NSURL fileURLWithPath:filePath];
-  var webView = [[WebView alloc] initWithFrame:frame]
-  [[webView mainFrame] loadRequest:[NSURLRequest requestWithURL:[NSURL fileURLWithPath:filePath]]]
-  [[window contentView] addSubview:webView]
-  [window center]
+    // Add Web View to window
+      var webView = WebView.alloc().initWithFrame(NSMakeRect(0, 0, windowWidth, windowHeight - 24));
+      webView.setAutoresizingMask(NSViewWidthSizable|NSViewHeightSizable);
+      var windowObject = webView.windowScriptObject();
+      var delegate = new MochaJSDelegate({
 
-	// Let’s create a native OK button
-	var okButton = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]
-	var userClickedOK = false
-	[okButton setTitle:"  Ok  "]
-	[okButton setBezelStyle:NSRoundedBezelStyle]
-	[okButton sizeToFit]
-	[okButton setFrame:NSMakeRect([window frame].size.width - [okButton frame].size.width - 20, 14, [okButton frame].size.width, [okButton frame].size.height)]
-	[okButton setKeyEquivalent:"\r"] // return key
-	[okButton setCOSJSTargetFunction:function(sender) {
-		userClickedOK = true
-		[window orderOut:nil]
-		[NSApp stopModal]
-	}];
+          "webView:didFinishLoadForFrame:" : (function(webView, webFrame) {
+              //We call this function when we know that the webview has finished loading
+              var count = [artboards count];
+              windowObject.evaluateWebScript("updateInput("+count+")");
+          }),
 
-	[[window contentView] addSubview:okButton]
+          //To get commands from the webView we observe the location hash: if it changes, we do something
+          "webView:didChangeLocationWithinPageForFrame:" : (function(webView, webFrame) {
+              var locationHash = windowObject.evaluateWebScript("window.location.hash");
 
-	// Let’s create a native cancel button
-	var cancelButton = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 0, 0)]
-	var userClickedCancel = false
-	[cancelButton setTitle:"  Cancel  "]
-	[cancelButton setBezelStyle:NSRoundedBezelStyle]
-	[cancelButton sizeToFit]
-	[cancelButton setFrame:NSMakeRect([okButton frame].origin.x - [cancelButton frame].size.width, 14, [cancelButton frame].size.width, [cancelButton frame].size.height)]
-	[cancelButton setKeyEquivalent:@"\033"] // escape key
-	[cancelButton setCOSJSTargetFunction:function(sender) {
-		userClickedCancel = true
-		[window orderOut:nil]
-		[NSApp stopModal]
-	}]
+              //With a regular expression we check if the hash contains one of the strings we are sending from the UI
+              //We can't use a simple == because we are also sending a timestamp from the UI to make sure
+              //the hash update is registered by the plugin even if we are pressing the same button twice
+              if (/#close/.test(locationHash)) {
+                  //we perform whatever we want: in this case we perform some cleaning and close the window
+                  threadDictionary.removeObjectForKey(identifier);
+                  webViewWindow.close();
 
-	[[window contentView] addSubview:cancelButton]
+              } else if (/#update/.test(locationHash)) {
+                //Or we can do something more interesting…
 
-	// get the user input
-	[NSApp runModalForWindow:window]
+                //We force an context update to update what we are selecting
+                //it may be useful for you or not according to what you are developing
+                var count = updateContext();
+                windowObject.evaluateWebScript("updateInput"+count+";");
+              }
 
-  //On OK button clicked…
-	if (!userClickedCancel) {
-    //… we run a function on the webview and…
-    var userInput = [webView stringByEvaluatingJavaScriptFromString:@"getValue()"];
-    //… do something with what that function returns
-    log(userInput);
-	}
+          })
+      });
 
-	// let the GC gather these guys (and the targets!)
-	okButton = nil;
-	cancelButton = nil;
-	window = nil;
+      webView.setFrameLoadDelegate_(delegate.getClassInstance());
+      webView.setMainFrameURL_(context.plugin.urlForResourceNamed("ui.html").path());
+
+      webViewWindow.contentView().addSubview(webView);
+      webViewWindow.center();
+      webViewWindow.makeKeyAndOrderFront(nil);
+
+      // Close Window
+      var closeButton = webViewWindow.standardWindowButton(NSWindowCloseButton);
+      closeButton.setCOSJSTargetFunction(function(sender) {
+          COScript.currentCOScript().setShouldKeepAround(false);
+          threadDictionary.removeObjectForKey(identifier);
+          webViewWindow.close();
+      });
+      closeButton.setAction("callAction:");
+  };
+
+  function getTitleFromHandler(handler) {
+      for (var i = 0; i < swatches.length; i++) {
+          if (swatches[i].handler == handler) {
+              return swatches[i].title;
+          }
+      }
+  }
+
+  //Update the context as needed
+  function updateContext() {
+      var doc = NSDocumentController.sharedDocumentController().currentDocument();
+      var artboards = doc.currentPage().artboards();
+      return [artboards count]
+
+      //Use the following code if you need to update the current selection
+      // if (MSApplicationMetadata.metadata().appVersion > 41.2) {
+      //     var selection = doc.selectedLayers().layers();
+      // } else {
+      //     var selection = doc.selectedLayers();
+      // }
 };

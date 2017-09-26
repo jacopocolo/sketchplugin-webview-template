@@ -19,15 +19,25 @@
 	<div>
 	<h1>Hello World</h1>
 	<form>
-  Some label: <input type="text" id="myInput"><br>
-</form>
+  Artboards in page: <input type="text" id="myInput"><br>
+	</form>
+	<button onclick="updateHash('update')">Update</button>
+	<button onclick="updateHash('close')">Close Webview</button>
 </div>
 </body>
 <script>
-	function getValue(){
-		return document.getElementById('myInput').value;
-	};
+function updateHash(hash) {
+			window.location.hash = hash + new Date().getTime();;
+			return false
+		}
+
+function getValue(){
+				return document.getElementById('myInput').value;
+};
+
+function updateInput(value) {
+	console.log(value);
+	document.getElementById('myInput').value = value;
+}
 </script>
-<!--Small trick to prevent caching of the script.js file-->
-<script>document.write("<script type='text/javascript' src='script.js?v=" + Date.now() + "'><\/script>");</script>
-		</html>
+</html>
