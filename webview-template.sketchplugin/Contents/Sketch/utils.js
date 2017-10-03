@@ -16,7 +16,7 @@ function getTitleFromHandler(handler) {
     }
 }
 
-function parseHashBangArgs(aURL) {
+function parseHash(aURL) {
 	aURL = aURL;
 	var vars = {};
 	var hashes = aURL.slice(aURL.indexOf('#') + 1).split('&');

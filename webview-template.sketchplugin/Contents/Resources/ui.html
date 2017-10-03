@@ -8,6 +8,7 @@
 			margin: 0;
 			width: 100%;
 			height: 100%;
+			font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 		}
 		div {
 			padding: 10px;
@@ -21,29 +22,34 @@
 	<form>
   Artboards in page: <input type="text" id="myInput"><br>
 	</form>
-	<button onclick="updateHash('update','true')">Update</button>
+	<button onclick="updateHash('update')">Update</button>
 	<br>
 	<br>
 	<form>
   Add artboard with name... <input type="text" id="artboardName" value="Artboard name"><br>
 	</form>
-	<button onclick="updateHash('add',document.getElementById('artboardName').value)">Add artboard</button>
+	<button onclick="updateHash('addArtboard','artboardName',document.getElementById('artboardName').value)">Add artboard</button>
 	<br>
 	<br>
-	<button onclick="updateHash('close','true')">Close Webview</button>
+	<button onclick="updateHash('close')">Close Webview</button>
 </div>
 </body>
 <script>
-function updateHash(hash, param) {
-			//new Date is there to make sure the url is alwasy different
-			window.location.hash = hash+'='+param + '&date=' +new Date().getTime();
+function updateHash(command, parameter, value) {
+		//We can send a simple command or a command with a parameter and value
+		//You can extend this function to send multiple values. script.js will parse
+		//all the values and expose them in the hash object so you can use them
+		//new Date is there just to make sure the url is alwasy different
+			if (parameter && value) {
+			window.location.hash = command+"=0&"+parameter+"="+value+'&date=' +new Date().getTime();
+		} else {
+			window.location.hash = command+'=0&date=' +new Date().getTime();
+		}
 			return false
 		}
 
-function getValue(){
-				return document.getElementById('myInput').value;
-};
-
+//We can call Javascript functions from Sketch and set parameters from there
+//This function is never called in this file but the script.js can call it and update the UI
 function updateInput(value) {
 	document.getElementById('myInput').value = value;
 }
