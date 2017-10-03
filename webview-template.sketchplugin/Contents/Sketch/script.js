@@ -64,6 +64,17 @@ function onRun(context) {
                 //Like updating the artboard count based on the current contex
                 log(updateContext().document.currentPage().artboards().count())
                 windowObject.evaluateWebScript("updateInput("+updateContext().document.currentPage().artboards().count()+");");
+              } else if (/#add/.test(locationHash)) {
+                //If you want to grab data from the UI, you need to parse it from the hash
+                artboardName = parseHashBangArgs(locationHash).add
+                artboard = MSArtboardGroup.new();
+                frame = artboard.frame();
+                frame.x = 0;
+                frame.y = 0;
+                frame.setWidth(100);
+                frame.setHeight(100);
+                artboard.setName(artboardName);
+                doc.currentPage().addLayers([artboard]);
               }
 
           })

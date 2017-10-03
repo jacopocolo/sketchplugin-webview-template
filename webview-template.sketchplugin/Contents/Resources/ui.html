@@ -21,13 +21,22 @@
 	<form>
   Artboards in page: <input type="text" id="myInput"><br>
 	</form>
-	<button onclick="updateHash('update')">Update</button>
-	<button onclick="updateHash('close')">Close Webview</button>
+	<button onclick="updateHash('update','true')">Update</button>
+	<br>
+	<br>
+	<form>
+  Add artboard with name... <input type="text" id="artboardName" value="Artboard name"><br>
+	</form>
+	<button onclick="updateHash('add',document.getElementById('artboardName').value)">Add artboard</button>
+	<br>
+	<br>
+	<button onclick="updateHash('close','true')">Close Webview</button>
 </div>
 </body>
 <script>
-function updateHash(hash) {
-			window.location.hash = hash + new Date().getTime();;
+function updateHash(hash, param) {
+			//new Date is there to make sure the url is alwasy different
+			window.location.hash = hash+'='+param + '&date=' +new Date().getTime();
 			return false
 		}
 
