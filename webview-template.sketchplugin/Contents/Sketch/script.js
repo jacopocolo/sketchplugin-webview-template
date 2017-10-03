@@ -68,7 +68,7 @@ function onRun(context) {
               } else if (hash.addArtboard) {
                 //If you are sending arguments from the UI
                 //You can simply grab them from the hash object
-                artboardName = hash.artboardName
+                artboardName = hash.artboardName;
                 artboard = MSArtboardGroup.new();
                 frame = artboard.frame();
                 frame.x = 0;
