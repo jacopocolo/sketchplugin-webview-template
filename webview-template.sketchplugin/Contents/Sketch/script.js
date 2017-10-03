@@ -1,13 +1,12 @@
 //Let's import the library that allows this
 @import "MochaJSDelegate.js";
+@import 'utils.js';
 
 function onRun(context) {
-  //You do what you want with the context, I expose these
-  doc = context.document;
-  selection = context.selection;
-  page = [doc currentPage];
-  view = [doc currentView];
-  artboards = [[doc currentPage] artboards];
+  //Since the webview can talk with sketch, we update the context
+  //as needed to make sure we have the correct context when we apply changes
+  //the updateContext function is in utils.js
+  var doc = updateContext().document;
 
   var userDefaults = NSUserDefaults.standardUserDefaults();
 
@@ -44,8 +43,7 @@ function onRun(context) {
 
           "webView:didFinishLoadForFrame:" : (function(webView, webFrame) {
               //We call this function when we know that the webview has finished loading
-              var count = [artboards count];
-              windowObject.evaluateWebScript("updateInput("+count+")");
+              windowObject.evaluateWebScript("updateInput("+updateContext().document.currentPage().artboards().count()+")");
           }),
 
           //To get commands from the webView we observe the location hash: if it changes, we do something
@@ -63,10 +61,9 @@ function onRun(context) {
               } else if (/#update/.test(locationHash)) {
                 //Or we can do something more interesting…
 
-                //We force an context update to update what we are selecting
-                //it may be useful for you or not according to what you are developing
-                var count = updateContext();
-                windowObject.evaluateWebScript("updateInput"+count+";");
+                //Like updating the artboard count based on the current contex
+                log(updateContext().document.currentPage().artboards().count())
+                windowObject.evaluateWebScript("updateInput("+updateContext().document.currentPage().artboards().count()+");");
               }
 
           })
@@ -88,25 +85,3 @@ function onRun(context) {
       });
       closeButton.setAction("callAction:");
   };
-
-  function getTitleFromHandler(handler) {
-      for (var i = 0; i < swatches.length; i++) {
-          if (swatches[i].handler == handler) {
-              return swatches[i].title;
-          }
-      }
-  }
-
-  //Update the context as needed
-  function updateContext() {
-      var doc = NSDocumentController.sharedDocumentController().currentDocument();
-      var artboards = doc.currentPage().artboards();
-      return [artboards count]
-
-      //Use the following code if you need to update the current selection
-      // if (MSApplicationMetadata.metadata().appVersion > 41.2) {
-      //     var selection = doc.selectedLayers().layers();
-      // } else {
-      //     var selection = doc.selectedLayers();
-      // }
-};
