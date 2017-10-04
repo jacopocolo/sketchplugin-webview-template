@@ -1,7 +1,5 @@
 //Let's import the library that allows us to talk with the UI
 @import "MochaJSDelegate.js";
-//And some utility functions
-@import 'utils.js';
 
 function onRun(context) {
   //Since the webview can talk with Sketch, we have a function to update the context
@@ -102,3 +100,38 @@ function onRun(context) {
       });
       closeButton.setAction("callAction:");
   };
+
+  //Utility functions
+  function updateContext() {
+      var doc = NSDocumentController.sharedDocumentController().currentDocument();
+
+      return {
+          document: doc
+      }
+  }
+
+  function getTitleFromHandler(handler) {
+      for (var i = 0; i < swatches.length; i++) {
+          if (swatches[i].handler == handler) {
+              return swatches[i].title;
+          }
+      }
+  }
+
+  function parseHash(aURL) {
+  	aURL = aURL;
+  	var vars = {};
+  	var hashes = aURL.slice(aURL.indexOf('#') + 1).split('&');
+
+      for(var i = 0; i < hashes.length; i++) {
+         var hash = hashes[i].split('=');
+
+         if(hash.length > 1) {
+      	   vars[hash[0].toString()] = hash[1];
+         } else {
+       	  vars[hash[0].toString()] = null;
+         }
+      }
+
+      return vars;
+  }
