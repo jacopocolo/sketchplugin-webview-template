@@ -22,34 +22,54 @@
 	<form>
   Artboards in page: <input type="text" id="myInput"><br>
 	</form>
-	<button onclick="updateHash('update')">Update</button>
+	<button onclick="updateArtboards()">Update</button>
+	<script>
+	//Managing hashes with multiple values in the onclick is a bit complex
+	//so I create a custom function that just calls updateHash
+	//if you are sending a simple command you can just send the command as a string
+	//the plugin will parse it and assign it to a hash object
+	//on the script.js side we verify if the hash object contains the command
+	//and if it does we execute the code
+	function updateArtboards() {
+		updateHash('update');
+	}
+	</script>
 	<br>
 	<br>
 	<form>
   Add artboard with name... <input type="text" id="artboardName" value="Artboard name"><br>
 	</form>
-	<button onclick="updateHash('add','artboardName',document.getElementById('artboardName').value)">Add artboard</button>
+	<button onclick="addArtboard()">Add artboard</button>
+	<script>
+	function addArtboard() {
+		//More interestingly, you can send commands AND values in the same hash
+		//the syntax is: command&parameter=value
+		//If you want to send more parameters: command&parameter1=value&parameter2=value…
+		updateHash('addArtboard&artboardName='+document.getElementById('artboardName').value);
+	}
+	</script>
 	<br>
 	<br>
-	<button onclick="updateHash('close')">Close Webview</button>
+	<button onclick="closeWindow()">Close Webview</button>
+	<script>
+	function closeWindow() {
+		updateHash('close');
+	}
+	</script>
 </div>
 </body>
 <script>
-function updateHash(command, parameter, value) {
+function updateHash(hash) {
 		//We can send a simple command or a command with a parameter and value
 		//You can extend this function to send multiple values. script.js will parse
 		//all the values and expose them in the hash object so you can use them
 		//new Date is there just to make sure the url is alwasy different
-			if (parameter && value) {
-			window.location.hash = command+"=0&"+parameter+"="+value+'&date=' +new Date().getTime();
-		} else {
-			window.location.hash = command+'=0&date=' +new Date().getTime();
-		}
+			window.location.hash = hash+'&date=' +new Date().getTime();
 			return false
-		}
+}
 
 //We can call Javascript functions from Sketch and set parameters from there
-//This function is never called in this file but the script.js can call it and update the UI
+//This function is never called in this file but the sketch.js can call it and update the UI
 function updateInput(value) {
 	document.getElementById('myInput').value = value;
 }

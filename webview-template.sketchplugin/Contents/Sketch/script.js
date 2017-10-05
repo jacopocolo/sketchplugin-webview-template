@@ -54,16 +54,16 @@ function onRun(context) {
               //In example, if you send updateHash('add','artboardName','Mark')
               //You’ll be able to use hash.artboardName to return 'Mark'
               var hash = parseHash(locationHash);
-
+              log(hash);
               //We parse the location hash and check for the command we are sending from the UI
               //If the command exist we run the following code
-              if (hash.update) {
+              if (hash.hasOwnProperty('update')) {
                 //In example updating the artboard count based on the current contex.
                 //The evaluateWebScript function allows us to call a function from the UI.html with parameters
                 //coming from Sketch
                 windowObject.evaluateWebScript("updateInput("+updateContext().document.currentPage().artboards().count()+");");
 
-              } else if (hash.addArtboard) {
+              } else if (hash.hasOwnProperty('addArtboard')) {
                 //If you are sending arguments from the UI
                 //You can simply grab them from the hash object
                 artboardName = hash.artboardName;
@@ -76,7 +76,7 @@ function onRun(context) {
                 artboard.setName(artboardName);
                 doc.currentPage().addLayers([artboard]);
 
-              } else if (hash.close) {
+              } else if (hash.hasOwnProperty('close')) {
                 //We can also call commands on the window itself, like closing the window
                 //This can be run aftr other commands, obviously
                 threadDictionary.removeObjectForKey(identifier);
