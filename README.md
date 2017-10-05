@@ -1,6 +1,6 @@
 # Sketchplugin webview template
 
-[!template gif](https://raw.githubusercontent.com/jacopocolo/sketchplugin-webview-template/master/template.gif)
+![template gif](https://raw.githubusercontent.com/jacopocolo/sketchplugin-webview-template/master/template.gif)
 
 ## What is this?
 It’s a simple template for building Sketch plugins using a HTML page as a interface. The sketchplugin contains two folders: Sketch and Resources.
