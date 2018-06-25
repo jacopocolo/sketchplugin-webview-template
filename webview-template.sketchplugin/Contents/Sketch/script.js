@@ -3,25 +3,12 @@
 
 // let's get a hold on the Sketch API
 const sketch = require('sketch')
+var document;
+var page;
 
 function onRun(context) {
-  //Since the webview can talk with Sketch, we have a function to update the context
-  //as needed to make sure we have the correct context when we apply changes
-  //the updateContext function is in utils.js
-  const document = sketch.fromNative(context.document)
-  const page = document.selectedPage;
-  log(page);
-
-  function artboardsCount() {
-    var artboardCount = 0;
-      for (x=0;x<page.layers.length;x++) {
-        if (page.layers[x].type == 'Artboard') {
-          artboardCount = artboardCount+1;
-        }
-      }
-      log(artboardCount);
-      return artboardCount;
-  }
+  document = sketch.fromNative(context.document)
+  page = document.selectedPage;
 
   var userDefaults = NSUserDefaults.standardUserDefaults();
 
@@ -59,7 +46,7 @@ function onRun(context) {
 
           "webView:didFinishLoadForFrame:" : (function(webView, webFrame) {
               //We call this function when we know that the webview has finished loading
-              //It's a function in the UI and we run it with a parameter coming from the updated context
+              //It's a function in the UI and we run it with a return coming from the artboardCount
               windowObject.evaluateWebScript("updateInput("+artboardsCount()+")");
           }),
 
@@ -111,14 +98,16 @@ function onRun(context) {
       });
       closeButton.setAction("callAction:");
   };
-
-  // function getTitleFromHandler(handler) {
-  //     for (var i = 0; i < swatches.length; i++) {
-  //         if (swatches[i].handler == handler) {
-  //             return swatches[i].title;
-  //         }
-  //     }
-  // }
+  
+  function artboardsCount() {
+    var artboardCount = 0;
+      for (x=0;x<page.layers.length;x++) {
+        if (page.layers[x].type == 'Artboard') {
+          artboardCount = artboardCount+1;
+        }
+      }
+      return artboardCount;
+  }
 
   function parseHash(aURL) {
   	aURL = aURL;
