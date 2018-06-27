@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Webview template</title>
+    <link>http://sparkle-project.org/files/sparkletestcast.xml</link>
+    <description>A template for building sketchplugins using a webview for UI</description>
+    <language>en</language>
+      <item>
+        <title>YOUR VERSION NAME</title>
+        <description>
+          <![CDATA[
+            <ul>
+              <li>Your release notes</li>
+            </ul>
+          ]]>
+        </description>
+        <enclosure url="YOUR ZIP RELEASE URL" sparkle:version="YOUR VERSION NUMBER" />
+      </item>
+  </channel>
+</rss>
