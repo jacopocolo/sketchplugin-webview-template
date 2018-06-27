@@ -11,7 +11,7 @@ In the Resources folder you can find ui.html, the HTML file that will be loaded 
 ## Why did you do this?
 While building another Sketch plugin I found that building a plugin interface is — by far — the most difficult thing to do if you are not experienced developing macOS applications. Javascript is enough to code the logic of the plugin but not at all useful when it comes to asking for user input. Any complex interaction needs to be coded in Cocoa or Swift. This template should allow developers familiar only with HTML, CSS, Javascript to build plugins with ease.
 
-Note: The Sketch API developers have built a way to automate many of the tasks necessary to build a plugin with [skpm](https://developer.sketchapp.com/guides/first-plugin/). Skpm _also_ includes a webview template. I reccommend you try skpm too.
+Note: The Sketch API developers have built a tool to automate many of the tasks necessary to build a plugin: [skpm](https://developer.sketchapp.com/guides/first-plugin/). Skpm _also_ includes a webview template. I recommend you try skpm too.
 
 ## How does this work?
 The code in script.js creates a new native window when the onRun function is called. In this window we load a webview with the ui.html file.
