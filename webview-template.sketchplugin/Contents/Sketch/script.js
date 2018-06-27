@@ -3,9 +3,11 @@
 
 // let's get a hold on the Sketch API
 const sketch = require('sketch')
+//let's expose these globally
 var document;
 var page;
 
+//the main function we run when we execute the plugin. It creates the webview and hooks
 function onRun(context) {
   document = sketch.fromNative(context.document)
   page = document.selectedPage;
@@ -68,7 +70,8 @@ function onRun(context) {
               } else if (hash.hasOwnProperty('addArtboard')) {
                 //If you are sending arguments from the UI
                 //You can simply grab them from the hash object
-                artboardName = hash.artboardName;
+                var artboardName = hash.artboardName;
+                //And then use them in your functions: in example adding an artboard
                 const layer = new sketch.Artboard({
                 parent: page,
                 name: artboardName,
@@ -98,7 +101,9 @@ function onRun(context) {
       });
       closeButton.setAction("callAction:");
   };
-  
+
+  //A couple of functions used in the plugin:
+  //A function to count the number of artboards in the page
   function artboardsCount() {
     var artboardCount = 0;
       for (x=0;x<page.layers.length;x++) {
@@ -109,6 +114,7 @@ function onRun(context) {
       return artboardCount;
   }
 
+  //A function to parse the hash we get back from the webview
   function parseHash(aURL) {
   	aURL = aURL;
   	var vars = {};
@@ -127,4 +133,5 @@ function onRun(context) {
       return vars;
   }
 
+//The whole function above is run here
 onRun(context);
