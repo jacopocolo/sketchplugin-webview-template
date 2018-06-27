@@ -1,23 +1,24 @@
 {
-  "author" : "",
-  "commands" : [
+  "name": "Webview template",
+  "description": "A template for building sketchplugins using a webview for UI",
+  "author": "Yours Truly",
+  "homepage": "https://example.org",
+  "version": "0",
+  "identifier": "org.example.template",
+  "appcast": "https://example.org/template-plugin-appcast.xml",
+  "icon": "icon.png",
+  "compatibleVersion": "49",
+  "bundleVersion": 1,
+  "commands": [
     {
-      "script" : "script.js",
-      "handler" : "onRun",
-      "shortcut" : "",
-      "name" : "Run UI",
-      "identifier" : "run"
+      "name": "Run UI",
+      "identifier": "run",
+      "shortcut": "",
+      "script": "script.js",
+      "handler": "onRun"
     }
   ],
-  "menu" : {
-    "items" : [
-      "run",
-    ],
-    "title" : "Webview template"
-  },
-  "identifier" : "com.jacopocolo.template.sketch",
-  "version" : "0",
-  "description" : "",
-  "authorEmail" : "",
-  "name" : "Sketchplugin webview template"
+  "menu": {
+    "items": ["run"]
+  }
 }

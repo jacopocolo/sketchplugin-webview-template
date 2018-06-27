@@ -1,11 +1,16 @@
 //Let's import the library that allows us to talk with the UI
 @import "MochaJSDelegate.js";
 
+// let's get a hold on the Sketch API
+const sketch = require('sketch')
+//let's expose these globally
+var document;
+var page;
+
+//the main function we run when we execute the plugin. It creates the webview and hooks
 function onRun(context) {
-  //Since the webview can talk with Sketch, we have a function to update the context
-  //as needed to make sure we have the correct context when we apply changes
-  //the updateContext function is in utils.js
-  var doc = updateContext().document;
+  document = sketch.fromNative(context.document)
+  page = document.selectedPage;
 
   var userDefaults = NSUserDefaults.standardUserDefaults();
 
@@ -43,8 +48,8 @@ function onRun(context) {
 
           "webView:didFinishLoadForFrame:" : (function(webView, webFrame) {
               //We call this function when we know that the webview has finished loading
-              //It's a function in the UI and we run it with a parameter coming from the updated context
-              windowObject.evaluateWebScript("updateInput("+updateContext().document.currentPage().artboards().count()+")");
+              //It's a function in the UI and we run it with a return coming from the artboardCount
+              windowObject.evaluateWebScript("updateInput("+artboardsCount()+")");
           }),
 
           //To get commands from the webView we observe the location hash: if it changes, we do something
@@ -54,27 +59,23 @@ function onRun(context) {
               //In example, if you send updateHash('add','artboardName','Mark')
               //You’ll be able to use hash.artboardName to return 'Mark'
               var hash = parseHash(locationHash);
-              log(hash);
               //We parse the location hash and check for the command we are sending from the UI
               //If the command exist we run the following code
               if (hash.hasOwnProperty('update')) {
                 //In example updating the artboard count based on the current contex.
                 //The evaluateWebScript function allows us to call a function from the UI.html with parameters
                 //coming from Sketch
-                windowObject.evaluateWebScript("updateInput("+updateContext().document.currentPage().artboards().count()+");");
+                windowObject.evaluateWebScript("updateInput("+artboardsCount()+");");
 
               } else if (hash.hasOwnProperty('addArtboard')) {
                 //If you are sending arguments from the UI
                 //You can simply grab them from the hash object
-                artboardName = hash.artboardName;
-                artboard = MSArtboardGroup.new();
-                frame = artboard.frame();
-                frame.x = 0;
-                frame.y = 0;
-                frame.setWidth(100);
-                frame.setHeight(100);
-                artboard.setName(artboardName);
-                doc.currentPage().addLayers([artboard]);
+                var artboardName = hash.artboardName;
+                //And then use them in your functions: in example adding an artboard
+                const layer = new sketch.Artboard({
+                parent: page,
+                name: artboardName,
+                });
 
               } else if (hash.hasOwnProperty('close')) {
                 //We can also call commands on the window itself, like closing the window
@@ -101,23 +102,19 @@ function onRun(context) {
       closeButton.setAction("callAction:");
   };
 
-  //Utility functions
-  function updateContext() {
-      var doc = NSDocumentController.sharedDocumentController().currentDocument();
-
-      return {
-          document: doc
+  //A couple of functions used in the plugin:
+  //A function to count the number of artboards in the page
+  function artboardsCount() {
+    var artboardCount = 0;
+      for (x=0;x<page.layers.length;x++) {
+        if (page.layers[x].type == 'Artboard') {
+          artboardCount = artboardCount+1;
+        }
       }
+      return artboardCount;
   }
 
-  function getTitleFromHandler(handler) {
-      for (var i = 0; i < swatches.length; i++) {
-          if (swatches[i].handler == handler) {
-              return swatches[i].title;
-          }
-      }
-  }
-
+  //A function to parse the hash we get back from the webview
   function parseHash(aURL) {
   	aURL = aURL;
   	var vars = {};
@@ -135,3 +132,6 @@ function onRun(context) {
 
       return vars;
   }
+
+//The whole function above is run here
+onRun(context);
